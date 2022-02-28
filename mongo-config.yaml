@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-config
+data:
+  mongod.conf: |
+    systemLog:
+      quiet: true
+    net:
+      port: 27017
+      bindIp: "0.0.0.0"
+    storage:
+      dbPath: /var/lib/mongodb/data
+    security:
+      authorization: enabled
+    net:
+      tls:
+        mode: requireTLS
+        CAFile: /etc/mongo/tls/ca/test-ca.pem
+        certificateKeyFile: /etc/mongo/tls/server/test-server1.pem
