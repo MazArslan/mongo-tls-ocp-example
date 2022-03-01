@@ -16,9 +16,9 @@ mongoose.connect(mongoDb.db, {
     useUnifiedTopology: true,
     tls: true,
     // tls cert key file location
-    tlsCAFile: JSON.parse(mongoDb.ca),
+    tlsCAFile: mongoDb.ca,
     // tls cert auth file location
-    tlsCertificateKeyFile: JSON.parse(mongoDb.cert)
+    tlsCertificateKeyFile: mongoDb.cert
 }).then(()=> {
     console.log('Database sucessfully connected ')
     }, error => {
