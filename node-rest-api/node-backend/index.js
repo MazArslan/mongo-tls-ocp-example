@@ -8,9 +8,9 @@ const mongoDb = require('./database/db');
 
 
 mongoose.Promise = global.Promise;
-// console.log(mongoDb.ca);
-// console.log(mongoDb.cert);
-// console.log(mongoDb.db);
+console.log(mongoDb.ca);
+console.log(mongoDb.cert);
+console.log(mongoDb.db);
 mongoose.connect(mongoDb.db, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
