@@ -142,7 +142,49 @@ spec:
           
 ```
 
-## 
+## Get the NODEJS App running
+
+developer view -> from github -> node js
+
+add to deployment.yaml
+```
+volumes:
+        - name: cert-auth
+          configMap:
+            name: ca
+            items:
+              - key: test-ca.pem
+                path: test-ca.pem
+            defaultMode: 420
+        - name: client-cert
+          configMap:
+            name: client
+            items:
+              - key: test-client.pem
+                path: test-client.pem
+            defaultMode: 420
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: node-js-api
+          env:
+            - name: TLS_CA_FILE
+              value: /mongo/ca/test-ca.pem
+            - name: TLS_CERT_KEY_FILE
+              value: /mongo/client/test-client.pem
+            - name: MONGO_URL
+              value: 'mongodb://mongo-ms-tls.apps.na46.prod.nextcle.com:27017/db'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: cert-auth
+              mountPath: /mongo/ca
+            - name: client-cert
+              mountPath: /mongo/client
+
+```
 
 ## Set env variables on node js
 
@@ -150,8 +192,39 @@ oc set env app-name MONGOURL='mongodb://<MongoDB-service-name>:21017/db'
 
 oc set env app-name MONGOURL='mongodb://<MongoDB-service-name>:21017/db'
 
+###
+
+create angular using dockerfile
+
+developer view -> dockerfile -> github url -> 
 
 ## 
+
+```
+spec:
+  contianers: 
+    - volumeMounts:
+      - name: cert-auth
+        mountPath: ~/ca
+      - name: client-cert
+        mounthPath: ~/client
+    volumes:
+      - name: cert-auth
+        configMap:
+            name: ca
+            items:
+              - key: test-ca.pem
+                path: test-ca.pem
+            defaultMode: 420
+      - name: client-cert
+        configMap:
+            name: client
+            items:
+              - key: test-client.pem
+                path: test-client.pem
+            defaultMode: 420
+
+```
 
 
 

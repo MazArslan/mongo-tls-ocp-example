@@ -6,6 +6,7 @@ let Task = require('../model/Task');
 
 //get all books
 taskRoute.route('/').get((req,res) => {
+    console.log("getting all tasks")
     Task.find((err, data) => {
         if (err) {
             return next(err)
@@ -17,6 +18,7 @@ taskRoute.route('/').get((req,res) => {
 
 // add
 taskRoute.route('/add-task').post((req,res, next) => {
+    console.log("add task" + req.body)
     Task.create(req.body, (err, data) => {
         if (err) {
             return next(err)
