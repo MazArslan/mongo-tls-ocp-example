@@ -1,50 +1,31 @@
-Creating a mongoDB Server on Openshift
+# Run Locally
 
+## create certificates
 
+```
+certs/generate.sh
+```
 
-## Import image from docker hub
+## Run mongoDB
 
-oc import image mongo:latest --confirm
-
-pulls image from docker hub
-
-## to start the DB
-
-cd node-rest-api
-
-npm start
-
-
-## to start the angular app  
-cd my-app
-
-ng serve --open
-
-
-## Run node server for API/CRUD operations
-
-npm start
-
-
-## stop mongodb
+### stop mongoDB
 
 sudo systemctl stop mongodb.service
 
-## create secrets
-certs/generate.sh
-
-## run mongodb
+## Run mongoDB with TLS
 
 cd certs/
 
 sudo mongod --tlsMode requireTLS --tlsCertificateKeyFile test-server1.pem --tlsCAFile test-ca.pem --config /etc/mongod.conf
 
-## to connect to mongo
+## to connect to mongoDB locally
 
 mongo --tls -tlsCAFile test-ca.pem --tlsCertificateKeyFile test-client.pem
 
-mongo --tls --tlsCAFile /etc/mongo/tls/ca/test-ca.pem --tlsCertificateKeyFile /etc/mongo/tls/client/test-client.pem
-## setting up tls mongo on node
+
+## Start the NodeJS API
+
+### Setting up tls mongo on node
 
 '''
 mongoose.connect(mongoDb.db, {
@@ -63,21 +44,29 @@ mongoose.connect(mongoDb.db, {
 )
 '''
 
-## create secrets on openshift (might be unnecceray)
+## to start the NodeJS API
 
-oc create secret generic clientcert --from-file certs/test-client.pem
+cd node-rest-api
 
-oc create secret generic servercerts --from-file certs/test-server1.pem
+npm i
 
-oc create secret generic cafile --from-file certs/test-ca.pem
+npm start
 
-## add tls to mongo on openshift
+## to start the angular app  
+cd my-app
 
-### create a config file for mongo
+ng build
 
-<!-- see `mongo-config.yaml` -->
+ng serve --open
 
-<!-- oc apply -f mongo-config.yaml  -->
+
+
+
+# Run on Openshift
+
+## Certificates
+
+### Import the certificates as configMaps
 
 oc create configmap ca --from-file=certs/test-ca.pem
 
@@ -85,12 +74,31 @@ oc create configmap server --from-file=certs/test-server1.pem
 
 oc create configmap client --from-file=certs/test-client.pem
 
-## Create mongodb
+### create secrets on openshift (might be unnecceray)
+
+oc create secret generic clientcert --from-file certs/test-client.pem
+
+oc create secret generic servercerts --from-file certs/test-server1.pem
+
+oc create secret generic cafile --from-file certs/test-ca.pem
+
+
+## Creating a mongoDB server with tls on Openshift
+
+### Import image from docker hub
+
+```
+oc import image mongo:latest --confirm
+```
+
+### Create mongoDB instance
 
 from openshift UI in developer view, from 'container image', select 'Image stream tag from internal registry'. select mongo, mongo, as deployment config. 
 
 
-## Update mongo deployment to include items
+### Adding tls to mongo on openshift
+
+#### Update mongo deployment to include items
 
 to include: 
 ```
@@ -139,13 +147,13 @@ spec:
             - '--tlsCertificateKeyFile'
             - /etc/mongo/tls/server/test-server1.pem
             - '--tlsCAFile'
-            - /etc/mongo/tls/ca/test-ca.pem
-          
+            - /etc/mongo/tls/ca/test-ca.pem    
 ```
 
-## Get the NODEJS App running
 
-developer view -> from github -> node js
+## Get the NodeJS API running
+
+developer view -> from github (add github URL)-> nodeJS
 
 add to deployment.yaml
 ```
@@ -174,7 +182,7 @@ volumes:
             - name: TLS_CERT_KEY_FILE
               value: /mongo/client/test-client.pem
             - name: MONGO_URL
-              value: 'mongodb://mongo-ms-tls.apps.na46.prod.nextcle.com:27017/db'
+              value: 'mongodb://<!!!!ADD_MONGO_URL!!!!>:27017/db'
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -186,18 +194,19 @@ volumes:
               mountPath: /mongo/client
 
 ```
-
+<!-- 
 ## Set env variables on node js
 
 oc set env app-name MONGOURL='mongodb://<MongoDB-service-name>:21017/db'
 
-oc set env app-name MONGOURL='mongodb://<MongoDB-service-name>:21017/db'
+oc set env app-name MONGOURL='mongodb://<MongoDB-service-name>:21017/db' 
+-->
 
-###
+## Run the Angular WebApp.
 
 create angular using dockerfile
 
-developer view -> dockerfile -> github url -> 
+developer view -> dockerfile -> github url 
 
 ## 
 
