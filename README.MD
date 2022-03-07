@@ -1,6 +1,17 @@
 # Run Locally
 
-## create certificates
+## Certificates
+
+## Update alt-names for DNS
+
+Add the DNS for openshift for DNS.2
+
+```
+[ alt_names ]
+DNS.2 = *.apps.eu46.prod.nextcle.com 
+```
+
+### run the generate script
 
 ```
 certs/generate.sh
@@ -98,10 +109,16 @@ oc import image mongo:latest --confirm
 
 from openshift UI in developer view, from 'container image', select 'Image stream tag from internal registry'. select mongo, mongo, as deployment config. 
 
+oc new-app mongo
+
+oc expose service mongo
+
 
 ### Adding tls to mongo on openshift
 
 #### Update mongo deployment to include items
+
+deployment -> mongo -> yaml
 
 to include: 
 ```
@@ -109,15 +126,8 @@ spec:
   template:
     spec:
       volumes:
-        - name: mongodb-data
-          emptyDir: {}
-        - name: mongo-config
-          configMap:
-            name: mongo-config
-            items:
-              - key: mongod.conf
-                path: mongod.conf
-            defaultMode: 420
+        ......
+        ......
         - name: cert-auth
           configMap:
             name: ca
@@ -136,14 +146,14 @@ spec:
       contianers:
         - resources:
           volumeMounts:
-            - name: mongodb-data
-              mountPath: /var/lib/mongodb/data
-            - name: mongo-config
-              mountPath: /etc/mongo
+            .....
+            .....
             - name: cert-auth
               mountPath: /etc/mongo/tls/ca
             - name: server-cert
               mountPath: /etc/mongo/tls/server
+          ..
+          ..
           args:
             - '--tlsMode'
             - requireTLS
@@ -156,29 +166,31 @@ spec:
 
 ## Get the NodeJS API running
 
-developer view -> from github (add github URL)-> nodeJS
+developer view -> from github (add github URL)-> context dir `/node-rest-api`-> nodeJS -> expose 8000
 
 add to deployment.yaml
+
 ```
-volumes:
+spec:
+  template:
+    spec:
+      volumes:
         - name: cert-auth
           configMap:
             name: ca
             items:
               - key: test-ca.pem
-                path: test-ca.pem
-            defaultMode: 420
+                path: /mongo/ca/test-ca.pem
         - name: client-cert
           configMap:
             name: client
             items:
               - key: test-client.pem
-                path: test-client.pem
-            defaultMode: 420
+                path: mongo/client/test-client.pem
       containers:
-        - resources: {}
-          terminationMessagePath: /dev/termination-log
-          name: node-js-api
+        - resources :{}
+          ....
+          ....
           env:
             - name: TLS_CA_FILE
               value: /mongo/ca/test-ca.pem
@@ -186,16 +198,15 @@ volumes:
               value: /mongo/client/test-client.pem
             - name: MONGO_URL
               value: 'mongodb://<!!!!ADD_MONGO_URL!!!!>:27017/db'
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-          imagePullPolicy: Always
+          ....
+          ....
           volumeMounts:
             - name: cert-auth
               mountPath: /mongo/ca
             - name: client-cert
               mountPath: /mongo/client
-
+          ....
+      
 ```
 <!-- 
 ## Set env variables on node js
@@ -207,44 +218,13 @@ oc set env app-name MONGOURL='mongodb://<MongoDB-service-name>:21017/db'
 
 ## Run the Angular WebApp.
 
-### Update Een
+### Update Enviroment.prod 
+
+## Create the angular app
 
 create angular using dockerfile
 
-developer view -> dockerfile -> github url 
-
-### Add this 
-
-
-
-
-```
-spec:
-  contianers: 
-    - volumeMounts:
-      - name: cert-auth
-        mountPath: ~/ca
-      - name: client-cert
-        mounthPath: ~/client
-    volumes:
-      - name: cert-auth
-        configMap:
-            name: ca
-            items:
-              - key: test-ca.pem
-                path: test-ca.pem
-            defaultMode: 420
-      - name: client-cert
-        configMap:
-            name: client
-            items:
-              - key: test-client.pem
-                path: test-client.pem
-            defaultMode: 420
-
-```
-
-
+developer view -> add-> from dockerfile -> github url -> container port = 4200 
 
 
 

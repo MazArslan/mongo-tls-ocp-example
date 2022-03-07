@@ -1,5 +1,3 @@
-sudo rm /etc/mongocerts/tls/*
-
 sudo rm ./*.crt
 
 sudo rm ./*.key
