@@ -1,12 +1,16 @@
 ## create CA PEM file
 
+printf "\n\nCOMMON NAME MUST BE DIFFERENT BETWEEN ROOT CA AND THE INTERMEDIATE CERT\n\n"
+
+printf "Creating Intermediate Cert Auth\n"
+
 openssl genrsa -out mongodb-test-ca.key
 
 openssl req -new -x509 -days 1826 -key mongodb-test-ca.key -out mongodb-test-ca.crt -config openssl-test-ca.cnf
 
 openssl genrsa -out mongodb-test-ia.key 4096
 
-echo "/n /n COMMON NAME MUST BE DIFFERENT BETWEEN ROOT CA AND THE INTERMEDIATE CERT /n /n"
+printf "Creating Root Cert Auth\n"
 
 openssl req -new -key mongodb-test-ia.key -out mongodb-test-ia.csr -config openssl-test-ca.cnf
 

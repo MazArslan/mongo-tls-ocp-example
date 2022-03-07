@@ -1,8 +1,8 @@
 pull-secret.txt
-./certs/*.crt
-./certs/*.key
-./certs/*.cst
-./certs/*.cnf
-./certs/*.srl
-./certs/*.pem
+*.crt
+*.key
+*.cst
+*.cnf
+*.srl
+*.pem
 **/node_modules
