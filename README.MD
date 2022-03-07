@@ -1,7 +1,8 @@
 Creating a mongoDB Server on Openshift
 
 
-## Use developer view add - database - mongo emptheral ?? MAYBE NOT
+
+## Import image from docker hub
 
 oc import image mongo:latest --confirm
 
