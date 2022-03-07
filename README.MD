@@ -57,12 +57,15 @@ cd my-app
 
 ng build
 
-ng serve --open
-
-
+ng serve --configuration development --open
 
 
 # Run on Openshift
+
+## create a new project on OpenShift
+
+oc new project mongo-tls
+
 
 ## Certificates
 
@@ -204,11 +207,16 @@ oc set env app-name MONGOURL='mongodb://<MongoDB-service-name>:21017/db'
 
 ## Run the Angular WebApp.
 
+### Update Een
+
 create angular using dockerfile
 
 developer view -> dockerfile -> github url 
 
-## 
+### Add this 
+
+
+
 
 ```
 spec:
